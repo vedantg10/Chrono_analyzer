@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+ruby '2.6.10'
+
+gem 'nokogiri'
+gem 'watir'
+gem 'pry'
