@@ -1,0 +1,7 @@
+.DS_Store
+code/images/
+code/images/models/
+code/images/models/*.pth
+code/images/models/*.pkl
+server/models/
+ui/node-modules/
