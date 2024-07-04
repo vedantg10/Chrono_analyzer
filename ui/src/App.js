@@ -28,33 +28,33 @@ class App extends React.Component {
     reader.onload = (e) => {
       this.setState({ imgSrc: reader.result });
     };
-    if (targetFile) {
-      console.log("File:", targetFile);
-      this.uploadFile(targetFile);
-    } else {
-      console.log("No file detected");
-    }
-  }
-  async uploadFile(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await API_CLIENT.post("/classify", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    var data = new FormData();
+    data.append("file", targetFile);
+    console.log(data);
+    API_CLIENT.post("/classify", data, {
+      headers: { "Content-Type": targetFile.type },
+    })
+      .then((response) => {
+        this.setState({ predictions: response.data });
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      console.log("File uploaded successfully:", response.data);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
   }
+
   render() {
     var ImagePreview;
     if (this.state.imgSrc) {
       ImagePreview = <img src={this.state.imgSrc} alt="image-of-a-watch" />;
     }
+    var Predictions = [];
+    this.state.predictions.brandPredictions.forEach((item, index) => {
+      Predictions.push(
+        <p key={`item-${index}`}>
+          {item[0]}: {item[1]}
+        </p>
+      );
+    });
     return (
       <div className="App">
         {" "}
@@ -72,6 +72,7 @@ class App extends React.Component {
         >
           {ImagePreview}
         </div>
+        <div className="predictions">{Predictions}</div>
       </div>
     );
   }

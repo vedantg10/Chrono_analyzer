@@ -1,7 +1,13 @@
-from flask import Flask, request
+from flask import Flask, jsonify, request
 import fastai.vision as fastai
 
 app = Flask(__name__)
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 CLASSIFIER = fastai.load_learner("./models", "classifier.pkl")
 
@@ -13,14 +19,16 @@ def classify():
     prediction = CLASSIFIER.predict(image)
     print (prediction)
     return {
-        "brandPrediction": sorted(
-        list(zip(
-            CLASSIFIER.data.classes,
-        [round(x,4) for x in map(float, prediction[2])]
-        )), key=lambda p:p[1],
-        reverse=True
-
+      "brandPredictions": sorted(
+      list(
+        zip(
+          CLASSIFIER.data.classes,
+          [round(x,4) for x in map(float, prediction[2])]
         )
+      ),
+      key=lambda p: p[1],
+      reverse=True
+    )
     }
 # def home():
 #     return "hello world"
